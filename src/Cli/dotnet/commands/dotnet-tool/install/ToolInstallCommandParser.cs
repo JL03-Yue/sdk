@@ -41,6 +41,11 @@ namespace Microsoft.DotNet.Cli
             HelpName = LocalizableStrings.FrameworkOptionName
         };
 
+        public static readonly CliOption<string> RollForwardOption = new("--roll-forward")
+        {
+            Description = LocalizableStrings.RollForwardOptionDescription,
+        };
+
         public static readonly CliOption<bool> PrereleaseOption = ToolSearchCommandParser.PrereleaseOption;
 
         public static readonly CliOption<bool> CreateManifestIfNeededOption = new("--create-manifest-if-needed")

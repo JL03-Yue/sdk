@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
+using System.Diagnostics.Eventing.Reader;
 using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.ToolManifest;
@@ -21,6 +22,7 @@ namespace Microsoft.DotNet.Tools.Tool.Install
 
         private readonly string _explicitManifestFile;
         private readonly bool _createManifestIfNeeded;
+        private readonly string _rollForward;
 
         public ToolInstallLocalCommand(
             ParseResult parseResult,
@@ -43,6 +45,7 @@ namespace Microsoft.DotNet.Tools.Tool.Install
             _toolManifestEditor = toolManifestEditor ?? new ToolManifestEditor();
             _localToolsResolverCache = localToolsResolverCache ?? new LocalToolsResolverCache();
             _toolLocalPackageInstaller = new ToolInstallLocalInstaller(parseResult, toolPackageInstaller);
+            _rollForward = parseResult.GetValue(ToolInstallCommandParser.RollForwardOption);
         }
 
         public override int Execute()
