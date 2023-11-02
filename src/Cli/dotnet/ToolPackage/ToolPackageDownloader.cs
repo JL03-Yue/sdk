@@ -288,7 +288,9 @@ namespace Microsoft.DotNet.Cli.ToolPackage
             var runtimeGraph = JsonRuntimeFormat.ReadRuntimeGraph(runtimeJsonGraph);
 
             // Create ManagedCodeConventions:
-            var conventions = new ManagedCodeConventions(runtimeGraph);
+            // var conventions = new ManagedCodeConventions(runtimeGraph);
+            var conventions = new ExtendedManagedCodeConventions(runtimeGraph);
+
 
             //  Create LockFileTargetLibrary
             var lockFileLib = new LockFileTargetLibrary()
