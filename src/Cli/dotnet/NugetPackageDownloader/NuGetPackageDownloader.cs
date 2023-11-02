@@ -654,6 +654,12 @@ namespace Microsoft.DotNet.Cli.NuGetPackageDownloader
                     _cacheSettings,
                     _verboseLogger,
                     cancellationToken).ConfigureAwait(false);
+
+                if (foundPackages.Count() == 0)
+                {
+                    throw new NuGetPackageNotFoundException(
+                        string.Format(LocalizableStrings.IsNotFoundInNuGetFeeds, packageIdentifier, source.Source));
+                }
             }
             catch (FatalProtocolException e) when (_restoreActionConfig.IgnoreFailedSources)
             {
