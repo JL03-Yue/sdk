@@ -43,6 +43,7 @@ namespace Microsoft.DotNet.Tools.Tool.Install
         private readonly string _toolPath;
         private readonly string _architectureOption;
         private IEnumerable<string> _forwardRestoreArguments;
+        private readonly bool _rollForward;
 
         public ToolInstallGlobalOrToolPathCommand(
             ParseResult parseResult,
@@ -83,6 +84,7 @@ namespace Microsoft.DotNet.Tools.Tool.Install
 
             _reporter = (reporter ?? Reporter.Output);
             _errorReporter = (reporter ?? Reporter.Error);
+            _rollForward = parseResult.GetValue(ToolInstallCommandParser.RollForwardOption);
         }
 
         public override int Execute()

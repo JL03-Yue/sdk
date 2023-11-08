@@ -48,6 +48,11 @@ namespace Microsoft.DotNet.Cli
             Description = LocalizableStrings.CreateManifestIfNeededOptionDescription
         };
 
+        public static readonly CliOption<bool> RollForwardOption = new("--roll-forward")
+        {
+            Description = LocalizableStrings.RollForwardOptionDescription
+        };
+
         public static readonly CliOption<VerbosityOptions> VerbosityOption = CommonOptions.VerbosityOption;
 
         // Don't use the common options version as we don't want this to be a forwarded option

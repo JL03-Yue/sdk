@@ -307,8 +307,6 @@ namespace Microsoft.DotNet.Cli.ToolPackage
             var collection = new ContentItemCollection();
             collection.Load(package.Files);
 
-            
-
             //  Create criteria
             var managedCriteria = new List<SelectionCriteria>(1);
             // Use major.minor version of currently running version of .NET

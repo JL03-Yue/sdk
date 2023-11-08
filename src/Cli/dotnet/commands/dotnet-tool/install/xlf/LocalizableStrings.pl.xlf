@@ -83,6 +83,11 @@ Jeśli chcesz utworzyć manifest, użyj polecenia „dotnet new tool-manifest”
         <target state="translated">Opcje --prerelease i --version nie są obsługiwane w tym samym poleceniu</target>
         <note />
       </trans-unit>
+      <trans-unit id="RollForwardOptionDescription">
+        <source>The roll-forward policy to use when selecting an SDK version.</source>
+        <target state="new">The roll-forward policy to use when selecting an SDK version.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="VersionOptionDescription">
         <source>The version of the tool package to install.</source>
         <target state="translated">Wersja pakietu narzędzia do zainstalowania.</target>
