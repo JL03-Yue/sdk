@@ -283,6 +283,31 @@ La valeur par défaut est « false ». Toutefois, lorsque vous ciblez .NET 7 ou 
         <target state="translated">La solution {0} contient déjà le projet {1} dans le dossier de la solution {2}.</target>
         <note />
       </trans-unit>
+      <trans-unit id="ToolPackageIncompatibleFramework">
+        <source>Installation failed.
+
+This app wasn't installed because it won't run on your machine. This can be resolved by one of the following:
+
+1. Install with the `--roll-forward` flag, using with the following command.
+
+dotnet tool install -g --roll-forward {0}
+
+2. Install {1} with the following link
+
+{2}</source>
+        <target state="new">Installation failed.
+
+This app wasn't installed because it won't run on your machine. This can be resolved by one of the following:
+
+1. Install with the `--roll-forward` flag, using with the following command.
+
+dotnet tool install -g --roll-forward {0}
+
+2. Install {1} with the following link
+
+{2}</target>
+        <note />
+      </trans-unit>
       <trans-unit id="Update">
         <source>Update</source>
         <target state="translated">Mettre à jour</target>

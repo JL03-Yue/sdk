@@ -289,6 +289,7 @@ namespace Microsoft.DotNet.Cli.ToolPackage
 
             // Create ManagedCodeConventions:
             var conventions = new ManagedCodeConventions(runtimeGraph);
+            
 
             //  Create LockFileTargetLibrary
             var lockFileLib = new LockFileTargetLibrary()
@@ -305,6 +306,8 @@ namespace Microsoft.DotNet.Cli.ToolPackage
 
             var collection = new ContentItemCollection();
             collection.Load(package.Files);
+
+            
 
             //  Create criteria
             var managedCriteria = new List<SelectionCriteria>(1);
@@ -324,6 +327,12 @@ namespace Microsoft.DotNet.Cli.ToolPackage
                 RuntimeInformation.RuntimeIdentifier);
             managedCriteria.Add(standardCriteria);
 
+            // Confirm if the target framework is compatible
+            if(!IsCompatibleTargetFramework(collection, conventions, currentTargetFramework, packageId))
+            {
+                throw new InvalidOperationException();
+            }
+
             //  Create asset file
             if (lockFileLib.PackageType.Contains(PackageType.DotnetTool))
             {
@@ -339,6 +348,39 @@ namespace Microsoft.DotNet.Cli.ToolPackage
             lockFileTarget.Libraries.Add(lockFileLib);
             lockFile.Targets.Add(lockFileTarget);
             new LockFileFormat().Write(Path.Combine(assetFileDirectory.Value, "project.assets.json"), lockFile);
+        }
+
+        private static bool IsCompatibleTargetFramework(
+            ContentItemCollection collection,
+            ManagedCodeConventions conventions,
+            NuGetFramework currentTargetFramework,
+            PackageId packageId
+            )
+        {
+            var patternGroups = new List<ContentItemGroup>();
+
+            collection.PopulateItemGroups(conventions.Patterns.ToolsAssemblies, patternGroups);
+
+            // there is one group per TFM/RID now. This sample ignores RIDs. Get just the list of TFMs
+            var packageToolsTfms = patternGroups.Select(g => (NuGetFramework)g.Properties["tfm"]);
+
+            // Pretend we're running on the .NET 8 runtime
+            NuGetFramework runtimeFramework = currentTargetFramework;
+
+            // Check if any of the package TFMs are compatible with the runtime, and if so, which is the best one
+            var frameworkComparer = new FrameworkReducer();
+            var bestPackageTfm = frameworkComparer.GetNearest(runtimeFramework, packageToolsTfms);
+
+            // Output result
+            if (bestPackageTfm is null)
+            {
+                // Console.WriteLine($"This package is not compatible with {runtimeFramework.GetShortFolderName()}. The package contains assets for {string.Join(", ", packageToolsTfms)}");
+                throw new ToolPackageException(
+                                string.Format(
+                                    CommonLocalizableStrings.ToolPackageIncompatibleFramework,
+                                    packageId, packageToolsTfms, "sample - link"));
+            }
+            return true;
         }
     }
 }

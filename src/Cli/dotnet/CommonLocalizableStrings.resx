@@ -733,4 +733,17 @@ The default is 'false.' However, when targeting .NET 7 or lower, the default is 
   <data name="ArtifactsPathArgumentName" xml:space="preserve">
     <value>ARTIFACTS_DIR</value>
   </data>
+  <data name="ToolPackageIncompatibleFramework" xml:space="preserve">
+    <value>Installation failed.
+
+This app wasn't installed because it won't run on your machine. This can be resolved by one of the following:
+
+1. Install with the `--roll-forward` flag, using with the following command.
+
+dotnet tool install -g --roll-forward {0}
+
+2. Install {1} with the following link
+
+{2}</value>
+  </data>
 </root>
