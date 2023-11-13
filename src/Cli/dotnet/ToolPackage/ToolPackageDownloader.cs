@@ -367,7 +367,10 @@ namespace Microsoft.DotNet.Cli.ToolPackage
 
             // Check if any of the package TFMs are compatible with the runtime, and if so, which is the best one
             var frameworkComparer = new FrameworkReducer();
-            var bestPackageTfm = frameworkComparer.GetNearest(runtimeFramework, packageToolsTfms);
+
+            // TBD: change this line to just compare runtime Framework to packageToolsTfms
+            // var bestPackageTfm = frameworkComparer.GetNearest(runtimeFramework, packageToolsTfms);
+            var bestPackageTfm = packageToolsTfms.Where((NuGetFramework f) => NuGetFrameworkFullComparer.Instance.Equals(runtimeFramework, f)).FirstOrDefault();
 
             // Output result
             if (bestPackageTfm is null)
