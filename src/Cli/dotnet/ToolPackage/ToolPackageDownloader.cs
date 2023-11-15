@@ -144,7 +144,7 @@ namespace Microsoft.DotNet.Cli.ToolPackage
                                        
                     CreateAssetFile(packageId, packageVersion, toolDownloadDir, assetFileDirectory, _runtimeJsonPath, targetFramework);
 
-                    // Roll forward
+                    // Roll forward for global tools
                     var toolSettingFilePath = ExtractDotnetToolSettingsFile(toolDownloadDir, packageId, packageVersion);
                     var entryPointPath = GetRuntimeConfigFile(new DirectoryPath(toolSettingFilePath));
                     var runtimeConfigFileName = $"{Path.GetFileNameWithoutExtension(entryPointPath)}{".runtimeconfig.json"}";
@@ -383,12 +383,6 @@ namespace Microsoft.DotNet.Cli.ToolPackage
                 RuntimeInformation.RuntimeIdentifier);
             managedCriteria.Add(standardCriteria);
 
-            // Confirm if the target framework is compatible
-            /*if(!IsCompatibleTargetFramework(collection, conventions, currentTargetFramework, packageId))
-            {
-                throw new InvalidOperationException();
-            }*/
-
             //  Create asset file
             if (lockFileLib.PackageType.Contains(PackageType.DotnetTool))
             {
@@ -416,46 +410,10 @@ namespace Microsoft.DotNet.Cli.ToolPackage
             var runtimeOptions = jsonObject["runtimeOptions"] as JObject;
             if (runtimeOptions != null)
             {
-                runtimeOptions["rollFoward"] = "LatestMajor";
+                runtimeOptions["rollFoward"] = "LatestMajor"; // To be decided
                 string updateJson = jsonObject.ToString();
                 File.WriteAllText(runtimeConfigPath, updateJson);
             }
-        }
-
-        private static bool IsCompatibleTargetFramework(
-            ContentItemCollection collection,
-            ManagedCodeConventions conventions,
-            NuGetFramework currentTargetFramework,
-            PackageId packageId
-            )
-        {
-            var patternGroups = new List<ContentItemGroup>();
-
-            collection.PopulateItemGroups(conventions.Patterns.ToolsAssemblies, patternGroups);
-
-            // there is one group per TFM/RID now. This sample ignores RIDs. Get just the list of TFMs
-            var packageToolsTfms = patternGroups.Select(g => (NuGetFramework)g.Properties["tfm"]);
-
-            // Pretend we're running on the .NET 8 runtime
-            NuGetFramework runtimeFramework = currentTargetFramework;
-
-            // Check if any of the package TFMs are compatible with the runtime, and if so, which is the best one
-            var frameworkComparer = new FrameworkReducer();
-
-            // TBD: change this line to just compare runtime Framework to packageToolsTfms
-            // var bestPackageTfm = frameworkComparer.GetNearest(runtimeFramework, packageToolsTfms);
-            var bestPackageTfm = packageToolsTfms.Where((NuGetFramework f) => NuGetFrameworkFullComparer.Instance.Equals(runtimeFramework, f)).FirstOrDefault();
-
-            // Output result
-            if (bestPackageTfm is null)
-            {
-                // Console.WriteLine($"This package is not compatible with {runtimeFramework.GetShortFolderName()}. The package contains assets for {string.Join(", ", packageToolsTfms)}");
-                throw new ToolPackageException(
-                                string.Format(
-                                    CommonLocalizableStrings.ToolPackageIncompatibleFramework,
-                                    packageId, packageToolsTfms, "sample - link"));
-            }
-            return true;
         }
     }
 }
