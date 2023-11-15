@@ -19,7 +19,12 @@ namespace Microsoft.DotNet.Cli
         {
             Description = "arguments forwarded to the tool"
         };
-       
+
+        public static readonly CliOption<string> RollForwardOption = new("--roll-forward")
+        {
+            Description = LocalizableStrings.RollForwardOptionDescription
+        };
+
         private static readonly CliCommand Command = ConstructCommand();
 
         public static CliCommand GetCommand()

@@ -22,6 +22,11 @@
         <target state="translated">COMMAND_NAME</target>
         <note />
       </trans-unit>
+      <trans-unit id="RollForwardOptionDescription">
+        <source>The roll-forward policy to use when selecting an SDK version.</source>
+        <target state="new">The roll-forward policy to use when selecting an SDK version.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="SpecifyExactlyOneCommandName">
         <source>Specify one command name to run.</source>
         <target state="translated">請指定一個要執行的命令名稱。</target>

@@ -27,6 +27,10 @@ using NuGet.RuntimeModel;
 using NuGet.Versioning;
 using NuGet.Configuration;
 using Microsoft.TemplateEngine.Utils;
+using System.Text.Json;
+using System.Xml;
+using System.Text.Json.Nodes;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.DotNet.Cli.ToolPackage
 {
@@ -139,6 +143,14 @@ namespace Microsoft.DotNet.Cli.ToolPackage
                     }
                                        
                     CreateAssetFile(packageId, packageVersion, toolDownloadDir, assetFileDirectory, _runtimeJsonPath, targetFramework);
+
+                    // Roll forward
+                    var toolSettingFilePath = ExtractDotnetToolSettingsFile(toolDownloadDir, packageId, packageVersion);
+                    var entryPointPath = GetRuntimeConfigFile(new DirectoryPath(toolSettingFilePath));
+                    var runtimeConfigFileName = $"{Path.GetFileNameWithoutExtension(entryPointPath)}{".runtimeconfig.json"}";
+                    var runtimeConfigPath = Path.Combine(Path.GetDirectoryName(toolSettingFilePath), runtimeConfigFileName);
+                    UpdateRollForwardInRuntimeConfig(runtimeConfigPath);
+
 
                     DirectoryPath toolReturnPackageDirectory;
                     DirectoryPath toolReturnJsonParentDirectory;
@@ -275,6 +287,52 @@ namespace Microsoft.DotNet.Cli.ToolPackage
             return version;
         }
 
+        private static string ExtractDotnetToolSettingsFile(
+            DirectoryPath toolStageDirectory,
+            PackageId packageId,
+            NuGetVersion version
+            )
+        {
+            var toolsDirectory = Path.Combine(toolStageDirectory.ToString().Trim('"'), packageId.ToString(), version.ToString(), "tools");
+
+            // Get the higher .net version a tool has
+            var netDirectory = "net7.0";
+            var settingDirectory = Path.Combine(toolsDirectory.ToString(), netDirectory, "any");
+            var settingFilePath = Path.Combine(settingDirectory.ToString(), "DotnetToolSettings.xml");
+            if (!File.Exists(settingFilePath))
+            {
+                throw new Exception();
+            }
+            return settingFilePath;
+        }
+
+        private static string GetRuntimeConfigFile(
+            DirectoryPath toolSettingFilePath)
+        {
+            try
+            {
+                // Read the DotnetToolSettings.xml file
+                XDocument dotnetToolSettings = XDocument.Load(toolSettingFilePath.Value);
+
+                // Find the EntryPoint attribute value
+                XElement commandElement = dotnetToolSettings.Descendants("Command").FirstOrDefault();
+                if (commandElement != null)
+                {
+                    XAttribute entryPointAttribute = commandElement.Attribute("EntryPoint");
+                    if (entryPointAttribute != null)
+                    {
+                        return entryPointAttribute.Value;
+                    }
+                }
+            }
+            catch(Exception)
+            {
+                throw new NotImplementedException();
+            }
+            return null;
+        }
+
+        
         private static void CreateAssetFile(
             PackageId packageId,
             NuGetVersion version,
@@ -326,10 +384,10 @@ namespace Microsoft.DotNet.Cli.ToolPackage
             managedCriteria.Add(standardCriteria);
 
             // Confirm if the target framework is compatible
-            if(!IsCompatibleTargetFramework(collection, conventions, currentTargetFramework, packageId))
+            /*if(!IsCompatibleTargetFramework(collection, conventions, currentTargetFramework, packageId))
             {
                 throw new InvalidOperationException();
-            }
+            }*/
 
             //  Create asset file
             if (lockFileLib.PackageType.Contains(PackageType.DotnetTool))
@@ -346,6 +404,22 @@ namespace Microsoft.DotNet.Cli.ToolPackage
             lockFileTarget.Libraries.Add(lockFileLib);
             lockFile.Targets.Add(lockFileTarget);
             new LockFileFormat().Write(Path.Combine(assetFileDirectory.Value, "project.assets.json"), lockFile);
+        }
+
+        private static void UpdateRollForwardInRuntimeConfig(
+            string runtimeConfigPath)
+        {
+            // Read the existing content of the runtimeconfig.json file
+            string existingJson = File.ReadAllText(runtimeConfigPath);
+
+            var jsonObject = JObject.Parse(existingJson);
+            var runtimeOptions = jsonObject["runtimeOptions"] as JObject;
+            if (runtimeOptions != null)
+            {
+                runtimeOptions["rollFoward"] = "LatestMajor";
+                string updateJson = jsonObject.ToString();
+                File.WriteAllText(runtimeConfigPath, updateJson);
+            }
         }
 
         private static bool IsCompatibleTargetFramework(
