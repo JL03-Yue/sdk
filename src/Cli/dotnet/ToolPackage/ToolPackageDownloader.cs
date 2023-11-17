@@ -145,11 +145,11 @@ namespace Microsoft.DotNet.Cli.ToolPackage
                     CreateAssetFile(packageId, packageVersion, toolDownloadDir, assetFileDirectory, _runtimeJsonPath, targetFramework);
 
                     // Roll forward for global tools
-                    var toolSettingFilePath = ExtractDotnetToolSettingsFile(toolDownloadDir, packageId, packageVersion);
+                    /*var toolSettingFilePath = ExtractDotnetToolSettingsFile(toolDownloadDir, packageId, packageVersion);
                     var entryPointPath = GetRuntimeConfigFile(new DirectoryPath(toolSettingFilePath));
                     var runtimeConfigFileName = $"{Path.GetFileNameWithoutExtension(entryPointPath)}{".runtimeconfig.json"}";
                     var runtimeConfigPath = Path.Combine(Path.GetDirectoryName(toolSettingFilePath), runtimeConfigFileName);
-                    UpdateRollForwardInRuntimeConfig(runtimeConfigPath);
+                    UpdateRollForwardInRuntimeConfig(runtimeConfigPath);*/
 
 
                     DirectoryPath toolReturnPackageDirectory;
