@@ -5,6 +5,9 @@ using System.CommandLine;
 using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.CommandFactory;
+using Microsoft.DotNet.ToolManifest;
+using Microsoft.DotNet.ToolPackage;
+using Microsoft.Extensions.EnvironmentAbstractions;
 
 namespace Microsoft.DotNet.Tools.Tool.Run
 {
@@ -14,6 +17,7 @@ namespace Microsoft.DotNet.Tools.Tool.Run
         private readonly LocalToolsCommandResolver _localToolsCommandResolver;
         private readonly IEnumerable<string> _forwardArgument;
         private readonly string _rollForward;
+        // private readonly IToolManifestFinder _toolManifestFinder;
 
         public ToolRunCommand(
             ParseResult result,
@@ -28,6 +32,11 @@ namespace Microsoft.DotNet.Tools.Tool.Run
 
         public override int Execute()
         {
+            /*(FilePath? manifestFileOptional, string warningMessage) =
+                _toolManifestFinder.ExplicitManifestOrFindManifestContainPackageId(_explicitManifestFile, _packageId);*/
+
+            /*var manifestFile = manifestFileOptional ?? _toolManifestFinder.FindFirst();*/
+
             CommandSpec commandspec = _localToolsCommandResolver.ResolveStrict(new CommandResolverArguments()
             {
                 // since LocalToolsCommandResolver is a resolver, and all resolver input have dotnet-

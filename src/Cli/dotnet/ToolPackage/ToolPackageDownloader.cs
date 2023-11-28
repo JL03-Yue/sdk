@@ -1,21 +1,17 @@
 ﻿// Copyright (c) .NET Foundation and contributors. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.CommandLine;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Microsoft.DotNet.Cli.NuGetPackageDownloader;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.ToolPackage;
 using Microsoft.DotNet.Tools;
 using Microsoft.Extensions.EnvironmentAbstractions;
+using Microsoft.TemplateEngine.Utils;
+using Newtonsoft.Json.Linq;
 using NuGet.Client;
 using NuGet.Common;
+using NuGet.Configuration;
 using NuGet.ContentModel;
 using NuGet.Frameworks;
 using NuGet.LibraryModel;
@@ -25,12 +21,8 @@ using NuGet.ProjectModel;
 using NuGet.Repositories;
 using NuGet.RuntimeModel;
 using NuGet.Versioning;
-using NuGet.Configuration;
-using Microsoft.TemplateEngine.Utils;
-using System.Text.Json;
-using System.Xml;
-using System.Text.Json.Nodes;
-using Newtonsoft.Json.Linq;
+using Microsoft.DotNet.NativeWrapper;
+
 
 namespace Microsoft.DotNet.Cli.ToolPackage
 {
@@ -57,6 +49,7 @@ namespace Microsoft.DotNet.Cli.ToolPackage
         protected readonly DirectoryPath _localToolAssetDir;
 
         protected readonly string _runtimeJsonPath;
+        private readonly INETBundleProvider _netBundleProvider;
 
         public ToolPackageDownloader(
             IToolPackageStore store,
@@ -70,6 +63,7 @@ namespace Microsoft.DotNet.Cli.ToolPackage
             
             _localToolAssetDir = new DirectoryPath(PathUtilities.CreateTempSubdirectory());
             _runtimeJsonPath = runtimeJsonPathForTests ?? Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "RuntimeIdentifierGraph.json");
+            _netBundleProvider = new NETBundlesNativeWrapper();
         }
 
         public IToolPackage InstallPackage(PackageLocation packageLocation, PackageId packageId,
@@ -148,7 +142,10 @@ namespace Microsoft.DotNet.Cli.ToolPackage
                     /*var toolSettingFilePath = ExtractDotnetToolSettingsFile(toolDownloadDir, packageId, packageVersion);
                     var entryPointPath = GetRuntimeConfigFile(new DirectoryPath(toolSettingFilePath));
                     var runtimeConfigFileName = $"{Path.GetFileNameWithoutExtension(entryPointPath)}{".runtimeconfig.json"}";
-                    var runtimeConfigPath = Path.Combine(Path.GetDirectoryName(toolSettingFilePath), runtimeConfigFileName);
+                    var runtimeConfigPath = Path.Combine(Path.GetDirectoryName(toolSettingFilePath), runtimeConfigFileName);*/
+                    // var runtimeConfigCompatibility = IsRuntimeConfigCompatible(runtimeConfigPath, _netBundleProvider);
+                    // var runtimeConfigCompatibility = _netBundleProvider.GetRuntimeConfigInfo(runtimeConfigPath);
+                    /*
                     UpdateRollForwardInRuntimeConfig(runtimeConfigPath);*/
 
 
@@ -415,5 +412,13 @@ namespace Microsoft.DotNet.Cli.ToolPackage
                 File.WriteAllText(runtimeConfigPath, updateJson);
             }
         }
+
+/*        private static int IsRuntimeConfigCompatible(
+            string runtimeConfigPath,
+            INETBundleProvider _netBundleProvider
+            )
+        {
+            return _netBundleProvider.GetRuntimeConfigInfo(runtimeConfigPath);
+        }*/
     }
 }
