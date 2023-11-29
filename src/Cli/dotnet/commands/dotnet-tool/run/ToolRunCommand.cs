@@ -8,6 +8,7 @@ using Microsoft.DotNet.CommandFactory;
 using Microsoft.DotNet.ToolManifest;
 using Microsoft.DotNet.ToolPackage;
 using Microsoft.Extensions.EnvironmentAbstractions;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.DotNet.Tools.Tool.Run
 {
@@ -17,25 +18,39 @@ namespace Microsoft.DotNet.Tools.Tool.Run
         private readonly LocalToolsCommandResolver _localToolsCommandResolver;
         private readonly IEnumerable<string> _forwardArgument;
         private readonly string _rollForward;
-        // private readonly IToolManifestFinder _toolManifestFinder;
+        private readonly ToolManifestFinder _toolManifest;
+        // private readonly ToolManifestEditor _toolManifestEditor;
 
         public ToolRunCommand(
             ParseResult result,
-            LocalToolsCommandResolver localToolsCommandResolver = null)
+            LocalToolsCommandResolver localToolsCommandResolver = null,
+            ToolManifestFinder toolManifest = null)
             : base(result)
         {
             _toolCommandName = result.GetValue(ToolRunCommandParser.CommandNameArgument);
             _forwardArgument = result.GetValue(ToolRunCommandParser.CommandArgument);
             _localToolsCommandResolver = localToolsCommandResolver ?? new LocalToolsCommandResolver();
             _rollForward = result.GetValue(ToolRunCommandParser.RollForwardOption);
+            _toolManifest = toolManifest ?? new ToolManifestFinder(new DirectoryPath(Directory.GetCurrentDirectory()));
         }
 
         public override int Execute()
         {
-            /*(FilePath? manifestFileOptional, string warningMessage) =
-                _toolManifestFinder.ExplicitManifestOrFindManifestContainPackageId(_explicitManifestFile, _packageId);*/
+            // Update --roll-forward if it is true for the tool in the manifest file
+            if (_toolManifest.TryFind(new ToolCommandName(_toolCommandName), out var toolManifestPackage))
+            {
+                IReadOnlyList<FilePath> manifestFilesContainPackageId
+                 = _toolManifest.FindByPackageId(toolManifestPackage.PackageId);
 
-            /*var manifestFile = manifestFileOptional ?? _toolManifestFinder.FindFirst();*/
+                bool rollForwardValue = false;
+
+                if (manifestFilesContainPackageId != null && manifestFilesContainPackageId.Count() == 1)
+                {
+                    string jsonContent = File.ReadAllText(manifestFilesContainPackageId[0].ToString());
+                    JObject jsonObject = JObject.Parse(jsonContent);
+                    rollForwardValue = bool.Parse((string)jsonObject["tools"][toolManifestPackage.PackageId.ToString()]["rollForward"]);
+                }
+            }
 
             CommandSpec commandspec = _localToolsCommandResolver.ResolveStrict(new CommandResolverArguments()
             {
@@ -43,6 +58,7 @@ namespace Microsoft.DotNet.Tools.Tool.Run
                 CommandName = $"dotnet-{_toolCommandName}",
                 CommandArguments = (_rollForward != null ? new List<string> { "--roll-forward", _rollForward } : Enumerable.Empty<string>()).Concat(_forwardArgument)
             });
+
             if (commandspec == null)
             {
                 throw new GracefulException(
