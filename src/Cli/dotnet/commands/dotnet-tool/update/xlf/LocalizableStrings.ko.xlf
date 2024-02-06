@@ -37,6 +37,11 @@
         <target state="translated">업데이트할 도구 패키지 ID를 하나 지정하세요.</target>
         <note />
       </trans-unit>
+      <trans-unit id="UpdateAllOptionDescription">
+        <source>Update all tools.</source>
+        <target state="new">Update all tools.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="UpdateLocaToolSucceededVersionNoChange">
         <source>Tool '{0}' is up to date (version '{1}' manifest file {2}) .</source>
         <target state="translated">'{0}' 도구는 최신 버전(버전 '{1}' 매니페스트 파일 {2})입니다.</target>

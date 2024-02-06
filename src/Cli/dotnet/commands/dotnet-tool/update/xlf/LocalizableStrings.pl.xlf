@@ -37,6 +37,11 @@
         <target state="translated">Określ jeden identyfikator pakietu narzędzia do zaktualizowania.</target>
         <note />
       </trans-unit>
+      <trans-unit id="UpdateAllOptionDescription">
+        <source>Update all tools.</source>
+        <target state="new">Update all tools.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="UpdateLocaToolSucceededVersionNoChange">
         <source>Tool '{0}' is up to date (version '{1}' manifest file {2}) .</source>
         <target state="translated">Narzędzie „{0}” jest aktualne (wersja „{1}”, plik manifestu {2}).</target>

@@ -37,6 +37,11 @@
         <target state="translated">Zadejte jedno ID balíčku nástroje, který se má aktualizovat.</target>
         <note />
       </trans-unit>
+      <trans-unit id="UpdateAllOptionDescription">
+        <source>Update all tools.</source>
+        <target state="new">Update all tools.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="UpdateLocaToolSucceededVersionNoChange">
         <source>Tool '{0}' is up to date (version '{1}' manifest file {2}) .</source>
         <target state="translated">Nástroj {0} je aktuální (verze {1}, soubor manifestu {2}).</target>

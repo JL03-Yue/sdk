@@ -37,6 +37,11 @@
         <target state="translated">Specificare un ID pacchetto dello strumento da aggiornare.</target>
         <note />
       </trans-unit>
+      <trans-unit id="UpdateAllOptionDescription">
+        <source>Update all tools.</source>
+        <target state="new">Update all tools.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="UpdateLocaToolSucceededVersionNoChange">
         <source>Tool '{0}' is up to date (version '{1}' manifest file {2}) .</source>
         <target state="translated">Lo strumento '{0}' è aggiornato (file manifesto {2} versione '{1}').</target>
