@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.CommandLine;
+using System.Security.AccessControl;
 using Microsoft.DotNet.Cli;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.Tools.Tool.Common;
@@ -14,6 +15,7 @@ namespace Microsoft.DotNet.Tools.Tool.Update
         private readonly ToolUpdateGlobalOrToolPathCommand _toolUpdateGlobalOrToolPathCommand;
         private readonly bool _global;
         private readonly string _toolPath;
+        private readonly bool _all;
 
         public ToolUpdateCommand(
             ParseResult result,
@@ -31,6 +33,7 @@ namespace Microsoft.DotNet.Tools.Tool.Update
                 ?? new ToolUpdateGlobalOrToolPathCommand(result);
 
             _global = result.GetValue(ToolUpdateCommandParser.GlobalOption);
+            _all = result.GetValue(ToolUpdateCommandParser.UpdateAllOption);
             _toolPath = result.GetValue(ToolUpdateCommandParser.ToolPathOption);
         }
 
@@ -41,6 +44,11 @@ namespace Microsoft.DotNet.Tools.Tool.Update
                 LocalizableStrings.UpdateToolCommandInvalidGlobalAndLocalAndToolPath);
 
             ToolAppliedOption.EnsureToolManifestAndOnlyLocalFlagCombination(_parseResult);
+
+            if(_all)
+            {
+                Console.WriteLine("detected --all option, but it is not implemented yet");
+            }
 
             if (_global || !string.IsNullOrWhiteSpace(_toolPath))
             {
